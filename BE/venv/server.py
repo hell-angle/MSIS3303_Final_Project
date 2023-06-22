@@ -13,8 +13,6 @@ import service as service
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 CORS(app)
-
-
 @app.route('/movies', methods=['POST'])
 def add_movie():
     data = request.get_json()  # Get the JSON data from the request

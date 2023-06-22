@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, TextInput, Button, Alert, StyleSheet ,Text} from 'react-native';
 import validator from 'validator';
 export const MovieRegister = () => {
@@ -10,7 +10,7 @@ export const MovieRegister = () => {
   const [emailError, setEmailError] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneNumberError, setPhoneNumberError] = useState('');
-
+  const [isFormValid, setIsFormValid] = useState(false);
   const handleRegister = () => {
     // Perform registration validation
     if (!userName || !passWord || !confirmPassWord) {
@@ -22,6 +22,7 @@ export const MovieRegister = () => {
       Alert.alert('Passwords do not match.');
       return;
     }
+
 
     // Registration successful
     Alert.alert('Registration successful!');
@@ -60,6 +61,10 @@ export const MovieRegister = () => {
         });
   };
 
+  useEffect(() => {
+    setIsFormValid(emailError === '' && phoneNumberError === '');
+  }, [emailError, phoneNumberError]);
+
   const validateEmail = () => {
     if (email.trim() === '') {
       setEmailError('Email is required');
@@ -73,12 +78,15 @@ export const MovieRegister = () => {
   const validatePhoneNumber = () => {
     if (phoneNumber.trim() === '') {
       setPhoneNumberError('Phone number is required');
+    } else if (!/^\d+$/.test(phoneNumber)) {
+      setPhoneNumberError('Please enter a valid phone number');
     } else if (!validator.isMobilePhone(phoneNumber, 'any')) {
       setPhoneNumberError('Please enter a valid phone number');
     } else {
       setPhoneNumberError('');
     }
-  };
+  }
+  
   return (
     <View style={styles.container}>
       <View style={styles.fanpage}>
@@ -104,15 +112,16 @@ export const MovieRegister = () => {
         </View>
           {emailError ? <Text>{emailError}</Text> : null}
           <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Phone Number"
-            value={phoneNumber}
-            onChangeText={text => setPhoneNumber(text)}
-            onBlur={validatePhoneNumber}
-            keyboardType="phone-pad" // Set the keyboard type to a numeric keypad
-          />
-        </View>
+            <TextInput
+              style={styles.inputField}
+              placeholder="Phone Number"
+              value={phoneNumber}
+              onChangeText={text => setPhoneNumber(text)}
+              onBlur={validatePhoneNumber}
+              keyboardType="phone-pad" // Set the keyboard type to a numeric keypad
+            />
+          </View>
+          {phoneNumberError ? <Text>{phoneNumberError}</Text> : null}
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.inputField}
@@ -144,6 +153,7 @@ export const MovieRegister = () => {
             title="Register"
             onPress={handleRegister}
             color="#007bff"
+            disabled={!isFormValid}
           />
         </View>
       </View>
